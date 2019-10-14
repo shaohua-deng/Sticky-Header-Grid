@@ -24,7 +24,9 @@ android {
 }
 
 dependencies {
-    implementation 'com.android.support:appcompat-v7:' + versions.supportLib
-    implementation 'com.android.support:design:' + versions.supportLib
+    implementation 'androidx.appcompat:appcompat:' + versions.appcompat
+    implementation 'androidx.appcompat:appcompat-resources:' + versions.appcompat
+    implementation  'androidx.recyclerview:recyclerview:' + versions.recyclerview
+    implementation  'androidx.recyclerview:recyclerview-selection:' + versions.recyclerview
     implementation project(':stickyheadergrid')
 }

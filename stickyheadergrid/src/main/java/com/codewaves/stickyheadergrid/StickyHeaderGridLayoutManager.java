@@ -4,17 +4,20 @@ import android.content.Context;
 import android.graphics.PointF;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.v7.widget.LinearSmoothScroller;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearSmoothScroller;
+import androidx.recyclerview.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import static android.support.v7.widget.RecyclerView.NO_POSITION;
+import static androidx.recyclerview.widget.RecyclerView.NO_POSITION;
 import static com.codewaves.stickyheadergrid.StickyHeaderGridAdapter.TYPE_HEADER;
 import static com.codewaves.stickyheadergrid.StickyHeaderGridAdapter.TYPE_ITEM;
 
@@ -330,6 +333,70 @@ public class StickyHeaderGridLayoutManager extends RecyclerView.LayoutManager im
          return mAdapter.getSectionHeaderPosition(section);
       }
       return mAdapter.getSectionItemPosition(section, offset);
+   }
+
+
+   public class GridAutofitLayoutManager extends GridLayoutManager
+   {
+      private int columnWidth;
+      private boolean isColumnWidthChanged = true;
+      private int lastWidth;
+      private int lastHeight;
+
+      public GridAutofitLayoutManager(@NonNull final Context context, final int columnWidth) {
+         /* Initially set spanCount to 1, will be changed automatically later. */
+         super(context, 1);
+         setColumnWidth(checkedColumnWidth(context, columnWidth));
+      }
+
+      public GridAutofitLayoutManager(
+              @NonNull final Context context,
+              final int columnWidth,
+              final int orientation,
+              final boolean reverseLayout) {
+
+         /* Initially set spanCount to 1, will be changed automatically later. */
+         super(context, 1, orientation, reverseLayout);
+         setColumnWidth(checkedColumnWidth(context, columnWidth));
+      }
+
+      private int checkedColumnWidth(@NonNull final Context context, int columnWidth) {
+         if (columnWidth <= 0) {
+            /* Set default columnWidth value (48dp here). It is better to move this constant
+            to static constant on top, but we need context to convert it to dp, so can't really
+            do so. */
+            columnWidth = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 48,
+                    context.getResources().getDisplayMetrics());
+         }
+         return columnWidth;
+      }
+
+      public void setColumnWidth(final int newColumnWidth) {
+         if (newColumnWidth > 0 && newColumnWidth != columnWidth) {
+            columnWidth = newColumnWidth;
+            isColumnWidthChanged = true;
+         }
+      }
+
+      @Override
+      public void onLayoutChildren(@NonNull final RecyclerView.Recycler recycler, @NonNull final RecyclerView.State state) {
+         final int width = getWidth();
+         final int height = getHeight();
+         if (columnWidth > 0 && width > 0 && height > 0 && (isColumnWidthChanged || lastWidth != width || lastHeight != height)) {
+            final int totalSpace;
+            if (getOrientation() == VERTICAL) {
+               totalSpace = width - getPaddingRight() - getPaddingLeft();
+            } else {
+               totalSpace = height - getPaddingTop() - getPaddingBottom();
+            }
+            final int spanCount = Math.max(1, totalSpace / columnWidth);
+            setSpanCount(spanCount);
+            isColumnWidthChanged = false;
+         }
+         lastWidth = width;
+         lastHeight = height;
+         super.onLayoutChildren(recycler, state);
+      }
    }
 
    @Override
