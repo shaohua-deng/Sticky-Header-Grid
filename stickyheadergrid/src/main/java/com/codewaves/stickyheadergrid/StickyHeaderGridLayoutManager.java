@@ -48,7 +48,7 @@ public class StickyHeaderGridLayoutManager extends RecyclerView.LayoutManager im
    private HeaderStateChangeListener mHeaderStateListener;
    private int mStickyHeaderSection = NO_POSITION;
    private View mStickyHeaderView;
-   private HeaderState mStickyHeadeState;
+   private HeaderState mStickyHeaderState;
 
    private View mFillViewSet[];
 
@@ -1029,11 +1029,11 @@ public class StickyHeaderGridLayoutManager extends RecyclerView.LayoutManager im
          onHeaderUnstick();
       }
 
-      final boolean headerStateChanged = mStickyHeaderSection != section || !mStickyHeadeState.equals(state) || state.equals(HeaderState.PUSHED);
+      final boolean headerStateChanged = mStickyHeaderSection != section || !mStickyHeaderState.equals(state) || state.equals(HeaderState.PUSHED);
 
       mStickyHeaderSection = section;
       mStickyHeaderView = view;
-      mStickyHeadeState = state;
+      mStickyHeaderState = state;
 
       if (headerStateChanged && mHeaderStateListener != null) {
          mHeaderStateListener.onHeaderStateChanged(section, view, state, pushOffset);
@@ -1047,7 +1047,7 @@ public class StickyHeaderGridLayoutManager extends RecyclerView.LayoutManager im
          }
          mStickyHeaderSection = NO_POSITION;
          mStickyHeaderView = null;
-         mStickyHeadeState = HeaderState.NORMAL;
+         mStickyHeaderState = HeaderState.NORMAL;
       }
    }
 
@@ -1161,7 +1161,7 @@ public class StickyHeaderGridLayoutManager extends RecyclerView.LayoutManager im
          }
          mStickyHeaderSection = NO_POSITION;
          mStickyHeaderView = null;
-         mStickyHeadeState = HeaderState.NORMAL;
+         mStickyHeaderState = HeaderState.NORMAL;
       }
    }
 
